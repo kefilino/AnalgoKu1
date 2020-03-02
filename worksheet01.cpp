@@ -26,7 +26,7 @@ bool hasProposed(int proposal[5]) {
     return true;
 }
 
-bool prefers(int wpref[][5], int mpref[][5], int w, int m1, int m2) {
+bool prefers(int wpref[][5], int w, int m1, int m2) {
     int m1idx = -1, m2idx = -1;
     for (int i = 0; i < 5; i++) {
         if (wpref[w][i] == m1)
@@ -42,18 +42,16 @@ bool prefers(int wpref[][5], int mpref[][5], int w, int m1, int m2) {
 
 void fungsiGS(int mpref[][5], int wpref[][5], int match[5]) {
     int proposal[5] = {0}; // Jumlah wanita yang telah dilamar
-    int taken[5] = {-1}; // Wanita ke-i taken oleh siapa
+    int taken[5] = {-1, -1, -1, -1, -1}; // Wanita ke-i taken oleh siapa
 
     while (isFree(match) && !hasProposed(proposal)) {
         for (int i = 0; i < 5; i++) {
             if (match[i] == -1) {
-                if (proposal[i] == 5)
-                    proposal[i] = 0;
                 int temp = mpref[i][proposal[i]]; // Preferensi wanita dari pria saat ini
                 if (taken[temp] == -1) {
                     match[i] = temp;
                     taken[temp] = i;
-                } else if (prefers(wpref, mpref, temp, i, taken[temp])) {
+                } else if (prefers(wpref, temp, i, taken[temp])) {
                     match[taken[temp]] = -1;
                     match[i] = temp;
                     taken[temp] = i;
@@ -61,6 +59,13 @@ void fungsiGS(int mpref[][5], int wpref[][5], int match[5]) {
             }
             proposal[i]++;
         }
+    }
+}
+
+void print(int match[], int size) {
+    cout << "Hasil Dari Stable Matching : " << endl;
+    for (int i = 0; i < size; i++) {
+        cout << "(" << (char)(i + 86) << ", " << (char)(match[i] + 65) << ")" << endl;
     }
 }
 
@@ -84,5 +89,5 @@ int main()
     };
     int match[5] = {-1, -1, -1, -1, -1}; //Pasangan dari pria
     fungsiGS(mpp, wpp, match);
-    cout << match[0] << endl << match[1] << endl << match[2] << endl << match[3] << endl << match[4];
+    print(match, sizeof(match)/sizeof(match[0]));
 }
